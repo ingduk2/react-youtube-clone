@@ -41,6 +41,28 @@ router.post("/uploadfiles", (req, res) => {
   });
 });
 
+router.get("/getVideos", (req, res) => {
+  //비디오를 DB에서 가져와서 클라이언트에 보낸다.
+  Video.find()
+    .populate("writer") //populate해줘야 모든걸 가져올수 있다함.
+    .exec((err, videos) => {
+      if (err) return res.status(400).send(err);
+      res.status(200).json({ success: true, videos });
+    });
+});
+
+router.post("/getVideoDetail", (req, res) => {
+  // console.log(req);
+  // prettier-ignore
+  Video.findOne({ "_id": req.body.videoId })
+    .populate("writer")
+    .exec((err, videoDetail) => {
+      // console.log('------------------------------',videoDetail);
+      if (err) return res.status(400).send(err);
+      return res.status(200).json({ success: true, videoDetail });
+    });
+});
+
 router.post("/thumbnail", (req, res) => {
   //썸네일 생성
   console.log("thumbnail");
@@ -51,13 +73,13 @@ router.post("/thumbnail", (req, res) => {
   ffmpeg.ffprobe(req.body.url, function (err, metadata) {
     console.dir(metadata);
     console.log(metadata.format.duration);
-    fileDutarion = metadata.format.duration;
+    fileDuration = metadata.format.duration;
   });
 
   ffmpeg(req.body.url)
     .on("filenames", function (filenames) {
-      console.log("Will generate " + filenames.join(", "));
-      console.log(filenames);
+      // console.log("Will generate " + filenames.join(", "));
+      // console.log(filenames);
 
       filePath = "uploads/thumbnails/" + filenames[0];
     })
@@ -83,6 +105,7 @@ router.post("/thumbnail", (req, res) => {
 
 router.post("/uploadVideo", (req, res) => {
   //비디오를 mongoDB에 저장한다.
+  console.log("uploadVideo", req.body);
   const video = new Video(req.body);
   video.save((err, doc) => {
     if (err) return res.json({ success: false, err });

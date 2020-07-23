@@ -34,7 +34,7 @@ function MyDropzone(props) {
 
         let variable = {
           url: response.data.url,
-          fineName: response.data.fineName,
+          fileName: response.data.fileName,
         };
 
         setFilePath(response.data.url);
@@ -51,6 +51,7 @@ function MyDropzone(props) {
         alert("비디오 업로드를 실패했습니다.");
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -101,22 +102,6 @@ function VideoUploadPage(props) {
     setCategory(e.currentTarget.value);
   };
 
-  const onDrop = (files) => {
-    let formData = new FormData();
-    const config = {
-      header: { "content-type": "multipart/form-data" },
-    };
-    formData.append("file", files[0]);
-
-    console.log(files);
-    Axios.post("/api/video/uploadfiles", formData, config).then((response) => {
-      if (response.data.success) {
-        console.log(response.data);
-      } else {
-        alert("비디오 업로드를 실패했습니다.");
-      }
-    });
-  };
   const onSubmit = (e) => {
     //클릭하면 하려던 것들 방지.
     e.preventDefault();
@@ -126,7 +111,7 @@ function VideoUploadPage(props) {
       title: VideoTitle,
       description: Description,
       privacy: Private,
-      filaPath: FilePath,
+      filePath: FilePath,
       category: Category,
       duration: Duration,
       thumbnail: ThumbnailPath,
