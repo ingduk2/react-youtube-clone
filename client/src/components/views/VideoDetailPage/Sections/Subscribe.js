@@ -37,6 +37,7 @@ function Subscribe(props) {
       userTo: props.userTo,
       userFrom: props.userFrom,
     };
+    console.log("subscribeVariable", subscribeVariable);
     if (Subscribed) {
       Axios.post("/api/subscribe/unSubscribe", subscribeVariable).then(
         (response) => {

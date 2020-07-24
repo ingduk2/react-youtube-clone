@@ -31,7 +31,7 @@ router.post("/subscribed", (req, res) => {
 
 router.post("/unSubscribe", (req, res) => {
   // prettier-ignore
-  Subscriber.find({"userTo" : req.body.userTo, "userFrom" : req.body.userFrom})
+  Subscriber.findOneAndDelete({"userTo" : req.body.userTo, "userFrom" : req.body.userFrom})
   .exec((err, doc) => {
     if(err) return res.status(400).send(err);
     return res.status(200).json({success:true, doc});
@@ -39,6 +39,7 @@ router.post("/unSubscribe", (req, res) => {
 });
 
 router.post("/subscribe", (req, res) => {
+  console.log(req.body);
   const subscribe = new Subscriber(req.body);
   // prettier-ignore
   subscribe.save((err, doc) => {
