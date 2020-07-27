@@ -5,6 +5,7 @@ const { auth } = require("../middleware/auth");
 const multer = require("multer");
 const ffmpeg = require("fluent-ffmpeg");
 const { Video } = require("../models/Video");
+const { Subscriber } = require("../models/Subscriber");
 
 //=================================
 //             Video
@@ -113,4 +114,29 @@ router.post("/uploadVideo", (req, res) => {
   });
 });
 
+router.post("/getSubscriptionVideo", (req, res) => {
+  //1. 현재 userId로 subscript ID 들을 찾는다.
+  let subscribedUser = [];
+  // prettier-ignore
+  Subscriber.find({ "userFrom": req.body.userFrom }).exec(
+    (err, subscriberInfo) => {
+      if (err) return res.status(400).send(err);
+
+      console.log("1",subscriberInfo);
+      subscriberInfo.map((subscriber, i) => {
+        subscribedUser.push(subscriber.userTo);
+      });
+
+      console.log("2", subscribedUser);
+  //2. 그 ID로 비디오를 가져와서 보내준다.
+  // prettier-ignore
+  Video.find({ "writer": { $in: subscribedUser } })
+    .populate("writer")
+    .exec((err, videos) => {
+      if (err) return res.status(400).send(err);
+      res.status(200).json({ success: true, videos });
+    });
+    }
+  );
+});
 module.exports = router;
